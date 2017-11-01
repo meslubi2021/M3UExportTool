@@ -3,8 +3,10 @@ package com.company;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
@@ -20,7 +22,7 @@ class ParseFile {
 
         String absolutePath = null;
         String root_of_playlist = null;
-        FileReader fileReader = null;
+        BufferedReader fileReader = null;
         BufferedReader bufferedReader;
         String current_line;
         ArrayList<String> out = new ArrayList<>();
@@ -28,7 +30,7 @@ class ParseFile {
         try {
             absolutePath = file.getParent();
             root_of_playlist = getDrive(file);
-            fileReader = new FileReader(file);
+            fileReader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
             if (fileReader == null) return out;
             System.out.println("parsing file " + file.getAbsolutePath());
         } catch (SecurityException | IOException e) {
