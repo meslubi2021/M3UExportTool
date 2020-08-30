@@ -44,8 +44,11 @@ class ParseFile {
             while ((current_line = bufferedReader.readLine()) != null) {
                 StringBuilder stringBuilder = new StringBuilder();
                 String output_file;
+                // url
+                if (current_line.startsWith("http")) {
+                	out.add(current_line);
                 // music file line, not tag line
-                if (!current_line.contains("#")) {
+                } else if (!current_line.contains("#")) {
                     // absolute path line
                     if (p.matcher(current_line).matches()) {
                         stringBuilder.append(current_line);

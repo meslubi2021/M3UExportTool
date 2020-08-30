@@ -1,20 +1,40 @@
 package com.company;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Cursor;
+import java.awt.FlowLayout;
+import java.awt.Insets;
+import java.awt.Toolkit;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.PropertyChangeListener;
+import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
+import javax.swing.WindowConstants;
 
 final class Main extends JFrame implements Runnable {
 
@@ -184,11 +204,6 @@ final class Main extends JFrame implements Runnable {
                         for (int i = 0; copying && (i < number_of_files); i++) {
                             String fromArrayList = list.get(i);
                             File source = new File(fromArrayList);
-                            if (source.canRead()) {
-                                taskOutput.append(source.toString() + "\n");
-                            } else {
-                                taskOutput.append("<html>CANNOT READ<font color='red'>red</font></html> " + source.toString() + "\n");
-                            }
                             File dest;
                             if (enumeration) {
                                 dest = new File(out.toString() + File.separatorChar + (i + 1) + " " + source.getName());
@@ -198,20 +213,34 @@ final class Main extends JFrame implements Runnable {
                             if (dest.exists()) {
                                 int answer = JOptionPane.showConfirmDialog(null, "file exists, do you want to overwrite?");
                                 if (answer == JOptionPane.YES_OPTION) {
-                                    CopyFilesToStick.copy_files_using_default_method(source, dest);
+                                    copy(writer, fromArrayList, dest);
                                 } else if (answer == JOptionPane.NO_OPTION) {
                                 } else if (answer == JOptionPane.CANCEL_OPTION) {
                                     copying = false;
                                 }
                             } else {
-                                CopyFilesToStick.copy_files_using_default_method(source, dest);
+                                copy(writer, fromArrayList, dest);
                             }
-                            if (make_script) writer.write("copy " + "\"" + source.toString() + "\"" + " " + "\"" + dest.toString() + "\"" + "\n");
                             progress = i;
                             setProgress(100 * (progress + 1) / number_of_files);
                         }
                     }
                     return null;
+                }
+                
+                private void copy(BufferedWriter writer, String fromArrayList, File dest) throws IOException {
+                	if (fromArrayList.startsWith("http")) {
+                		CopyFilesToStick.copy_http(fromArrayList, dest);
+                	} else {
+	                    File source = new File(fromArrayList);
+	                    if (source.canRead()) {
+	                        taskOutput.append(source.toString() + "\n");
+	                    } else {
+	                        taskOutput.append("<html>CANNOT READ<font color='red'>red</font></html> " + source.toString() + "\n");
+	                    }
+	                    CopyFilesToStick.copy_files_using_default_method(source, dest);
+	                    if (make_script) writer.write("copy " + "\"" + source.toString() + "\"" + " " + "\"" + dest.toString() + "\"" + "\n");
+                	}
                 }
 
                 @Override
