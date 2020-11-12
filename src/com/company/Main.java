@@ -205,10 +205,14 @@ final class Main extends JFrame implements Runnable {
                             String fromArrayList = list.get(i);
                             File source = new File(fromArrayList);
                             File dest;
+                            String sourceName = source.getName();
+                            final int index = sourceName.indexOf('?');
+                            if (index != -1)
+                            	sourceName = sourceName.substring(0, index);
                             if (enumeration) {
-                                dest = new File(out.toString() + File.separatorChar + (i + 1) + " " + source.getName());
+                                dest = new File(out.toString() + File.separatorChar + (i + 1) + " " + sourceName);
                             } else {
-                                dest = new File(out.toString() + File.separatorChar + source.getName());
+                                dest = new File(out.toString() + File.separatorChar + sourceName);
                             }
                             if (dest.exists()) {
                                 int answer = JOptionPane.showConfirmDialog(null, "file exists, do you want to overwrite?");
